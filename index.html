@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name=viewport content="width=device-width,initial-scale=1">
+  <meta name=author content="Andrea Giammarchi, @webreflection">
+  <meta name=description content="Service Worker Offline Map">
+  <meta name=apple-mobile-web-app-capable content=yes>
+  <meta name=mobile-web-app-capable content=yes>
+  <meta name=theme-color content=#116>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel=manifest href=manifest.json>
+  <title>Service Worker Offline Map</title>
+  <style>
+    html, body, #map {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .leaflet-bar.position {
+      cursor: pointer;
+      width: 34px;
+      height: 34px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+    }
+    .leaflet-bar.position:hover {
+      background-color: #f4f4f4;
+    }
+    .leaflet-bar.position img {
+      width: 12px;
+      margin: auto;
+      opacity:.5;
+      transition: opacity .2s ease-in;
+    }
+    .leaflet-bar.position img.active {
+      opacity: 1;
+    }
+  </style>
+  <script defer src="js/index.js"></script>
+</head>
+<body><main id="map"></main></body>
+</html>
