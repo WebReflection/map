@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
+  <title>Full Size Observer</title>
+  <style>
+  html, body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  html {
+    height: 100vh;
+    height: -webkit-fill-available;
+    background: #000;
+  }
+  body {
+    border: 8px solid yellow;
+    border-radius: 16px;
+    background-color: green;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    height: -webkit-fill-available;
+  }
+  input {
+    margin: auto;
+  }
+  </style>
+  <script type="nope">
+  /*! (c) Andrea Giammarchi */
+  function FullsizeObserver(target, callback) {
+    const {lastElementChild} = target;
+    const fn = ([{contentRect: {width, height}}]) => {
+      const {style} = lastElementChild;
+      style.width = width + 'px';
+      style.height = height + 'px';
+      if (callback)
+        callback(target, result);
+    };
+    const resize = () => {
+      fn([{contentRect: target.getBoundingClientRect()}]);
+    };
+    target.style.overflow = 'hidden';
+    target.style.padding = lastElementChild.style.margin = 0;
+    lastElementChild.style.boxSizing = 'border-box';
+    const observer = new ResizeObserver(fn);
+    const result = {
+      disconnect() {
+        observer.disconnect();
+        removeEventListener('resize', resize);
+      }
+    };
+    observer.observe(target);
+    return result;
+  }
+
+  addEventListener('DOMContentLoaded', () => {
+    const observer = FullsizeObserver(
+      document.documentElement,
+      console.log
+    );
+  });
+  </script>
+</head>
+<body><input></body>
+</html>
