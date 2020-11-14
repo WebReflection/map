@@ -30,12 +30,27 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="manifest.json">
   <style>
+    :root {
+      --translate-y: 68px;
+      --translate-more-y: calc(var(--translate-y) * -1.75);
+    }
+    @media (display-mode: standalone) {
+      :root {
+        --translate-y: 0px;
+      }
+    }
     html, body, #map {
       margin: 0;
       padding: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
+    }
+    button, a {
+      user-select: none;
+    }
+    .leaflet-control-zoom {
+      transform: translateY(calc(var(--translate-y) * 1.75));
     }
     .leaflet-bar.position {
       cursor: pointer;
@@ -46,6 +61,7 @@
       align-items: center;
       justify-content: center;
       background-color: #fff;
+      transform: translateY(var(--translate-more-y));
     }
     .leaflet-bar.position:hover {
       background-color: #f4f4f4;
@@ -63,7 +79,7 @@
       pointer-events: all;
       width: 64px;
       padding: 8px;
-      transform: translateY(-16px);
+      transform: translateY(calc(-16px + var(--translate-more-y)));
       transition: width .2s ease-in;
     }
     .leaflet-bar.search:focus {

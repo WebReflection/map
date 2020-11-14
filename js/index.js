@@ -105,18 +105,34 @@ function leaflet() {
     L.Control.Search = L.Control.extend({
       onAdd: function(map) {
         var timer = 0;
-        var online = 'Search 🔎';
+        var online = '🔍 Search';
         var offline = 'Offline';
         var input = L.DomUtil.create('input');
         var lastValue = '';
+        var results = new Map;
         input.className = 'leaflet-bar leaflet-control search';
+        input.addEventListener('touchstart', function () {
+          input.focus();
+        });
+        input.addEventListener('focus', function () {
+          input.placeholder = '';
+        });
+        input.addEventListener('blur', setPlaceholder);
+        input.addEventListener('keypress', function (event) {
+          if (event.key === 'Enter') {
+            lastValue = '';
+            input.dispatchEvent(new CustomEvent('input'));
+          }
+        });
         input.addEventListener('input', function () {
           var value = input.value.trim();
           if (value !== lastValue) {
             lastValue = value;
             clearTimeout(timer);
-            if (value)
-              timer = setTimeout(searchValue, 1000);
+            if (value) {
+              var delay = results.has(value) ? 500 : 1000;
+              timer = setTimeout(searchValue, delay, value);
+            }
           }
         });
         addEventListener('online', function () {
@@ -127,33 +143,40 @@ function leaflet() {
           input.disabled = true;
           input.placeholder = offline;
         });
-        input.placeholder = navigator.onLine ? online : offline;
+        setPlaceholder();
         input.disabled = !navigator.onLine;
         return input;
-        function searchValue() {
+        function setPlaceholder() {
+          input.placeholder = navigator.onLine ? online : offline;
+        }
+        function searchValue(value) {
           timer = 0;
-          fetch([
-            'https://nominatim.openstreetmap.org/search?q=',
-            '&format=json'
-          ].join(encodeURIComponent(lastValue)))
-            .then(function (b) { return b.json() })
-            .then(function (result) {
-              if (result.length) {
-                var boundingbox = result[0].boundingbox;
-                if (boundingbox) {
-                  var coords = boundingbox.map(parseFloat);
-                  map.fitBounds([
-                    [coords[0], coords[2]],
-                    [coords[1], coords[3]]
-                  ]);
-                }
-                else {
-                  var lat = result[0].lat;
-                  var lon = result[0].lon;
-                  map.panTo([parseFloat(lat), parseFloat(lon)]);
-                }
-              }
-            });
+          if (!results.has(value))
+            results.set(value, fetch([
+              'https://nominatim.openstreetmap.org/search?q=',
+              '&format=json'
+            ].join(encodeURIComponent(lastValue)))
+            .then(
+              function (b) { return b.json(); },
+              function () { results.delete(value); }));
+          results.get(value).then(showValue);
+        }
+        function showValue(result) {
+          if (result && result.length) {
+            var boundingbox = result[0].boundingbox;
+            if (boundingbox) {
+              var coords = boundingbox.map(parseFloat);
+              map.fitBounds([
+                [coords[0], coords[2]],
+                [coords[1], coords[3]]
+              ]);
+            }
+            else {
+              var lat = result[0].lat;
+              var lon = result[0].lon;
+              map.panTo([parseFloat(lat), parseFloat(lon)]);
+            }
+          }
         }
       }
     });
