@@ -11,7 +11,8 @@ else
   leaflet();
 
 function leaflet() {
-  var base = 'https://unpkg.com/leaflet@1.7.1/dist/';
+  // var base = 'https://unpkg.com/leaflet@1.7.1/dist/';
+  var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
     new Promise(function (res) {
       var el = document.createElement('link');
@@ -27,7 +28,7 @@ function leaflet() {
   ])
   .then(function () {
     var location = localStorage.getItem('map');
-    var map = L.map('map');
+    var map = L.map('map', {zoomControl: false});
     if (location) {
       var info = JSON.parse(location);
       map.setView(info.center, info.zoom);
@@ -95,6 +96,7 @@ function leaflet() {
     L.control.position = function(opts) {
       return new L.Control.Position(opts);
     };
-    L.control.position({position: 'topleft'}).addTo(map);
+    L.control.position({position: 'bottomright'}).addTo(map);
+    L.control.zoom({position: 'topright'}).addTo(map);
   });
 }

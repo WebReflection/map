@@ -1,12 +1,12 @@
 {
-  "background_color":"#116",
+  "background_color":"#ffffff",
   "description":"Service Worker Offline Map",
   "display":"standalone",
   "name":"SWOM",
   "orientation":"portrait-primary",
   "short_name":"SWOM",
   "start_url":"./",
-  "theme_color":"#116",
+  "theme_color":"#ffffff",
   "icons": [
     {
      "src": "android-icon-36x36.png",

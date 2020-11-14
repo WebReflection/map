@@ -12,9 +12,7 @@ addEventListener('install', event => {
   event.waitUntil(
     caches.open('site').then(db => db.addAll([
       './',
-      './js/index.js',
-      // TODO: this is likely not needed at all
-      './js/tile-fetcher.js'
+      './js/index.js'
     ]))
   );
 });
