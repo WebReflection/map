@@ -18,22 +18,24 @@ addEventListener('install', event => {
 });
 
 // regular SW fetch logic (this is just an example)
+const ignore = /nominatim\.openstreetmap\.org/;
 addEventListener('fetch', event => {
   const {request} = event;
-  event.respondWith(
-    caches.open('site').then(db => db.match(request).then(response => {
-      const fallback = fetch(request).then(
-        response => {
-          if(response.ok)
-            db.put(request, response.clone());
-          return response;
-        },
-        () => new Response('Not Found', {
-          status: 404,
-          type: 'plain/text'
-        })
-      );
-      return response || fallback;
-    }))
-  );
+  if (!ignore.test(request.url))
+    event.respondWith(
+      caches.open('site').then(db => db.match(request).then(response => {
+        const fallback = fetch(request).then(
+          response => {
+            if(response.ok)
+              db.put(request, response.clone());
+            return response;
+          },
+          () => new Response('Not Found', {
+            status: 404,
+            type: 'plain/text'
+          })
+        );
+        return response || fallback;
+      }))
+    );
 });

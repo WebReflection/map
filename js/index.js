@@ -54,7 +54,7 @@ function leaflet() {
         img.title = 'your position';
         button.className = 'leaflet-bar leaflet-control position';
         button.addEventListener('click', function (event) {
-          event.stopImmediatePropagation();
+          event.stopPropagation();
           event.preventDefault();
           button.blur();
           if (tracking) {
@@ -62,13 +62,16 @@ function leaflet() {
               map.panTo(marker.getLatLng());
           }
           else {
+            var isTrusted = event.isTrusted;
             tracking = navigator.geolocation.watchPosition(
               function (pos) {
                 var latLng = [pos.coords.latitude, pos.coords.longitude];
                 if (!marker) {
                   img.className = 'active';
                   marker = L.marker(latLng).addTo(map);
-                  map.panTo(latLng);
+                  localStorage.setItem('geo', 1);
+                  if (isTrusted)
+                    map.panTo(latLng);
                 }
                 else
                   marker.setLatLng(latLng);
@@ -80,7 +83,13 @@ function leaflet() {
             );
           }
         });
-        return button;
+        try {
+          if (localStorage.getItem('geo') == 1)
+            button.dispatchEvent(new CustomEvent('click'));
+        }
+        finally {
+          return button;
+        }
       },
       onRemove() {
         if (tracking) {
@@ -93,10 +102,69 @@ function leaflet() {
         }
       }
     });
+    L.Control.Search = L.Control.extend({
+      onAdd: function(map) {
+        var timer = 0;
+        var online = 'Search 🔎';
+        var offline = 'Offline';
+        var input = L.DomUtil.create('input');
+        var lastValue = '';
+        input.className = 'leaflet-bar leaflet-control search';
+        input.addEventListener('input', function () {
+          var value = input.value.trim();
+          if (value !== lastValue) {
+            lastValue = value;
+            clearTimeout(timer);
+            if (value)
+              timer = setTimeout(searchValue, 1000);
+          }
+        });
+        addEventListener('online', function () {
+          input.disabled = false;
+          input.placeholder = online;
+        });
+        addEventListener('offline', function () {
+          input.disabled = true;
+          input.placeholder = offline;
+        });
+        input.placeholder = navigator.onLine ? online : offline;
+        input.disabled = !navigator.onLine;
+        return input;
+        function searchValue() {
+          timer = 0;
+          fetch([
+            'https://nominatim.openstreetmap.org/search?q=',
+            '&format=json'
+          ].join(encodeURIComponent(lastValue)))
+            .then(function (b) { return b.json() })
+            .then(function (result) {
+              if (result.length) {
+                var boundingbox = result[0].boundingbox;
+                if (boundingbox) {
+                  var coords = boundingbox.map(parseFloat);
+                  map.fitBounds([
+                    [coords[0], coords[2]],
+                    [coords[1], coords[3]]
+                  ]);
+                }
+                else {
+                  var lat = result[0].lat;
+                  var lon = result[0].lon;
+                  map.panTo([parseFloat(lat), parseFloat(lon)]);
+                }
+              }
+            });
+        }
+      }
+    });
     L.control.position = function(opts) {
       return new L.Control.Position(opts);
     };
-    L.control.position({position: 'bottomright'}).addTo(map);
+    L.control.search = function(opts) {
+      return new L.Control.Search(opts);
+    };
     L.control.zoom({position: 'topright'}).addTo(map);
+    L.control.position({position: 'bottomright'}).addTo(map);
+    L.control.search({position: 'bottomleft'}).addTo(map);
   });
 }

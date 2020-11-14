@@ -59,6 +59,15 @@
     .leaflet-bar.position img.active {
       opacity: 1;
     }
+    .leaflet-bar.search {
+      width: 64px;
+      padding: 8px;
+      transform: translateY(-16px);
+      transition: width .2s ease-in;
+    }
+    .leaflet-bar.search:focus {
+      width: calc(100vw - 82px);
+    }
   </style>
   <script defer src="js/index.js"></script>
 </head>
