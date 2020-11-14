@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Service Worker Offline Map</title>
   <meta charset="UTF-8">
   <meta name=viewport content="width=device-width,initial-scale=1">
   <meta name=author content="Andrea Giammarchi, @webreflection">
@@ -10,6 +11,10 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://a.tile.openstreetmap.org/">
+  <link rel="preconnect" href="https://b.tile.openstreetmap.org/">
+  <link rel="preconnect" href="https://c.tile.openstreetmap.org/">
   <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
@@ -24,7 +29,6 @@
   <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="manifest.json">
-  <title>Service Worker Offline Map</title>
   <style>
     html, body, #map {
       margin: 0;
