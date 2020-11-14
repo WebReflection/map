@@ -4,66 +4,59 @@
   <meta charset="UTF-8">
   <meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
   <title>Full Size Observer</title>
-  <style>
+  <style matters>
   html, body {
     padding: 0;
     margin: 0;
-    box-sizing: content-box;
+    overflow: hidden;
+    box-sizing: border-box;
+    height: -webkit-fill-available;
   }
   html {
     height: 100vh;
-    height: -webkit-fill-available;
+  }
+  </style>
+  <script matters>
+  if (!self.visualViewport)
+    self.visualViewport = {
+      addEventListener: addEventListener.bind(self),
+      get height() {
+        return self.innerHeight;
+      }
+    };
+  addEventListener('DOMContentLoaded', resize, {once: true});
+  // possible work around for iOS < 13 ... but not sure how
+  // addEventListener('focus', resize, true);
+  visualViewport.addEventListener('resize', resize);
+  var timer = 0;
+  function resize() {
+    document.body.style.height = visualViewport.height + 'px';
+    document.documentElement.style.height = visualViewport.height + 'px';
+    self.scrollTo(0, 0);
+    // needed for Windows Phone
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      timer = 0;
+      self.scrollTo(0, 0);
+    }, 300);
+  }
+  </script>
+  <style irrelevant>
+  html {
     background: #000;
   }
   body {
-    border: 8px solid yellow;
+    border: 16px solid yellow;
     border-radius: 16px;
     background-color: green;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
-    height: -webkit-fill-available;
   }
   input {
     margin: auto;
   }
   </style>
-  <script type="nope">
-  /*! (c) Andrea Giammarchi */
-  function FullsizeObserver(target, callback) {
-    const {lastElementChild} = target;
-    const fn = ([{contentRect: {width, height}}]) => {
-      const {style} = lastElementChild;
-      style.width = width + 'px';
-      style.height = height + 'px';
-      if (callback)
-        callback(target, result);
-    };
-    const resize = () => {
-      fn([{contentRect: target.getBoundingClientRect()}]);
-    };
-    target.style.overflow = 'hidden';
-    target.style.padding = lastElementChild.style.margin = 0;
-    lastElementChild.style.boxSizing = 'border-box';
-    const observer = new ResizeObserver(fn);
-    const result = {
-      disconnect() {
-        observer.disconnect();
-        removeEventListener('resize', resize);
-      }
-    };
-    observer.observe(target);
-    return result;
-  }
-
-  addEventListener('DOMContentLoaded', () => {
-    const observer = FullsizeObserver(
-      document.documentElement,
-      console.log
-    );
-  });
-  </script>
 </head>
 <body><input></body>
 </html>
