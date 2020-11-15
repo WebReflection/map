@@ -4,82 +4,56 @@
   <meta charset="UTF-8">
   <meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
   <title>Full Size Observer</title>
-  <style matters>
-  html, body {
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    box-sizing: border-box;
-    height: 100%;
-    height: -webkit-fill-available;
-  }
-  html {
-    height: 100vh;
-  }
-  </style>
-  <script matters>
-  addEventListener('DOMContentLoaded', function () {
-    function resize() {
-      var height = visualViewport.height;
-      hStyle.height = bStyle.height = height + 'px';
-      scrollTo(0, 0);
-      dispatchEvent(new CustomEvent('screenfit', {
-        detail: {height: height}
-      }));
-      // needed for Windows Phone
-      setTimeout(scrollTo, 300, 0, 0);
-    }
-    var
-      visualViewport = self.visualViewport || {
-        addEventListener: addEventListener.bind(self),
-        get height() {
-          return innerHeight;
-        }
-      },
-      bStyle = document.body.style,
-      hStyle = document.documentElement.style
-    ;
-    resize();
-    visualViewport.addEventListener('resize', resize);
-    // possible work around for iOS < 13 ... but not sure how
-    // addEventListener('focus', resize, true);
-  }, {once: true});
-  </script>
-  <script irrelevant>
+  <script>try{new CustomEvent('!')}catch(_){document.write('<script src="https://unpkg.com/@ungap/custom-event"><\x2fscript>')}</script>
+  <script defer src="screenfit.js"></script>
+  <script>
   addEventListener('screenfit', function (event) {
+    document.body.className = 'fit';
     document.querySelector('footer').textContent = [
-      'current: ' + event.detail.height,
-      'inner: ' + innerHeight,
-      'avail: ' + screen.availHeight,
-      'height: ' + screen.height
-    ].join(' ');
+      'current: ' + Math.round(event.detail.height),
+      'inner: ' + Math.round(innerHeight),
+      'avail: ' + Math.round(screen.availHeight)
+    ].join(' - ');
   });
   </script>
-  <style irrelevant>
+  <style>
+  body, input {
+    font-family: sans-serif;
+  }
   html {
     background: #000;
   }
   body {
-    position: relative;
-    border: 16px solid yellow;
+    border: 16px solid #252545;
     border-radius: 16px;
-    background-color: green;
+    background-color: #151515;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    opacity: 0;
+    transition: opacity .3s ease-in;
+  }
+  body.fit {
+    opacity: 1;
+  }
+  main {
+    min-height: 50%;
+    flex-grow: 1;
+    display: block;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
   }
   input {
-    margin: auto;
+    font-size: 1rem;
+    max-width: calc(100% - 64px);
   }
   footer {
-    font-family: sans-serif;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 8px;
+    color: #eee;
+    padding: 16px;
     font-size: small;
+    border-top: 16px solid #252545;
   }
   </style>
 </head>
