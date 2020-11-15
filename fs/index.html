@@ -4,18 +4,6 @@
   <meta charset="UTF-8">
   <meta name=viewport content="width=device-width,initial-scale=1,user-scalable=no">
   <title>Full Size Observer</title>
-  <script>try{new CustomEvent('!')}catch(_){document.write('<script src="https://unpkg.com/@ungap/custom-event"><\x2fscript>')}</script>
-  <script defer src="screenfit.js"></script>
-  <script>
-  addEventListener('screenfit', function (event) {
-    document.body.className = 'fit';
-    document.querySelector('footer').textContent = [
-      'current: ' + Math.round(event.detail.height),
-      'inner: ' + Math.round(innerHeight),
-      'avail: ' + Math.round(screen.availHeight)
-    ].join(' - ');
-  });
-  </script>
   <style>
   body, input {
     font-family: sans-serif;
@@ -56,6 +44,19 @@
     border-top: 16px solid #252545;
   }
   </style>
+  <script kindle>if(!Object.bind)document.write('<script src="kindle.js"><\x2fscript>');</script>
+  <script ie11>try{new CustomEvent('!')}catch(_){document.write('<script src="ie.js"><\x2fscript>')}</script>
+  <script defer src="screenfit.js"></script>
+  <script>
+  addEventListener('screenfit', function (event) {
+    document.body.className = 'fit';
+    document.querySelector('footer').textContent = [
+      'current: ' + Math.round(event.detail.height),
+      'inner: ' + Math.round(innerHeight),
+      'avail: ' + Math.round(screen.availHeight)
+    ].join(' - ');
+  });
+  </script>
 </head>
 <body>
   <main><input></main>

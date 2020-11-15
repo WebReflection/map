@@ -1,5 +1,25 @@
 (function(document){
   /*! (c) Andrea Giammarchi - ISC */
+  /**
+   * Works/Tested on:
+   *  - KaiOS
+   *  - Opera Mini
+   *  - UCE Browser / Mini
+   *  - Windows Phone
+   *  - Samsung Internet
+   *  - Android 6+ / Androind One
+   *  - Any Chrome/ium based browser
+   *  - Safari / Moble 13+
+   *  - Vivaldi
+   *  - Firefox / Nightly
+   *
+   * Gotchas:
+   *  - IE11 and Kindle Browser need features detection
+   *  - iOS 12 (iPad does *not* trigger any resize)
+   *    possible work around for iOS < 13 -> not sure how
+   *    to detect the available size without the keyboard
+   *    document.addEventListener('focus', resize, true);
+   */
   var head = document.head;
   var visualViewport = self.visualViewport || {
     addEventListener: addEventListener.bind(self),
@@ -11,8 +31,6 @@
     'height:100%;height:100vh;height:-webkit-fill-available}';
   visualViewport.addEventListener('resize', resize);
   document.addEventListener('DOMContentLoaded', resize, {once: true});
-  // possible work around for iOS < 13 ... but not sure how
-  // document.addEventListener('focus', resize, true);
   function resize() {
     var width = visualViewport.width;
     var height = visualViewport.height;
