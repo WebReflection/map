@@ -18,30 +18,35 @@
   }
   </style>
   <script matters>
-  var visualViewport = self.visualViewport || {
-    addEventListener: addEventListener.bind(self),
-    get height() {
-      return innerHeight;
+  addEventListener('DOMContentLoaded', function () {
+    function resize() {
+      var height = visualViewport.height;
+      hStyle.height = bStyle.height = height + 'px';
+      scrollTo(0, 0);
+      dispatchEvent(new CustomEvent('screenfit', {
+        detail: {height: height}
+      }));
+      // needed for Windows Phone
+      setTimeout(scrollTo, 300, 0, 0);
     }
-  };
-  addEventListener('DOMContentLoaded', resize, {once: true});
-  // possible work around for iOS < 13 ... but not sure how
-  // addEventListener('focus', resize, true);
-  visualViewport.addEventListener('resize', resize);
-  function resize() {
-    var height = visualViewport.height;
-    document.body.style.height = height + 'px';
-    document.documentElement.style.height = height + 'px';
-    scrollTo(0, 0);
-    dispatchEvent(new CustomEvent('viewportchange', {
-      detail: {height: height}
-    }));
-    // needed for Windows Phone
-    setTimeout(scrollTo, 300, 0, 0);
-  }
-
-  // debug purpose
-  addEventListener('viewportchange', function (event) {
+    var
+      visualViewport = self.visualViewport || {
+        addEventListener: addEventListener.bind(self),
+        get height() {
+          return innerHeight;
+        }
+      },
+      bStyle = document.body.style,
+      hStyle = document.documentElement.style
+    ;
+    resize();
+    visualViewport.addEventListener('resize', resize);
+    // possible work around for iOS < 13 ... but not sure how
+    // addEventListener('focus', resize, true);
+  }, {once: true});
+  </script>
+  <script irrelevant>
+  addEventListener('screenfit', function (event) {
     document.querySelector('footer').textContent = [
       'current: ' + event.detail.height,
       'inner: ' + innerHeight,
@@ -62,6 +67,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
   }
   input {
     margin: auto;
@@ -74,7 +80,6 @@
     bottom: 0;
     padding: 8px;
     font-size: small;
-    text-align: center;
   }
   </style>
 </head>
