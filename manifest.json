@@ -3,7 +3,7 @@
   "description":"Service Worker Offline Map",
   "display":"standalone",
   "name":"SWOM",
-  "orientation":"portrait-primary",
+  "orientation":"any",
   "short_name":"SWOM",
   "start_url":"./",
   "theme_color":"#ffffff",
