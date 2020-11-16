@@ -17,10 +17,6 @@ function getInfo(map) {
   };
 }
 
-function panBy(map, panX, panY) {
-  map.panBy([panX, panY], {animate: false});
-}
-
 function leaflet() {
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
@@ -55,33 +51,8 @@ function leaflet() {
       var info = getInfo(map);
       localStorage.setItem('map', JSON.stringify(info));
     });
-    var centerWidth = 0;
-    var centerHeight = 0;
-    var panX = 0;
-    var panY = 0;
-    addEventListener('screenfit', function (event) {
-      var width = event.detail.width;
-      var height = event.detail.height;
-      if (centerWidth || centerHeight) {
-        if (
-          (width !== centerWidth) ||
-          (height !== centerHeight)
-        ) {
-          panBy(
-            map,
-            panX = (centerWidth - width) / 2,
-            panY = (centerHeight - height) / 2
-          );
-        }
-        else {
-          panX = 0;
-          panY = 0;
-        }
-      }
-      else {
-        centerWidth = width;
-        centerHeight = height;
-      }
+    addEventListener('screenfit', function () {
+      map.invalidateSize();
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -239,15 +210,13 @@ function leaflet() {
               map.fitBounds([
                 [coords[0], coords[2]],
                 [coords[1], coords[3]]
-              ], {animate: false});
+              ]);
             }
             else {
               var lat = result[0].lat;
               var lon = result[0].lon;
               map.panTo([parseFloat(lat), parseFloat(lon)]);
             }
-            if (panX || panY)
-              panBy(map, panX, panY);
           }
         }
       }
