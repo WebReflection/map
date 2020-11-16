@@ -21,6 +21,22 @@ function json(body) {
   return body.json();
 }
 
+function reverse(map, position) {
+  fetch([
+    'https://nominatim.openstreetmap.org/reverse?',
+    'lat=', position[0],
+    '&lon=', position[1],
+    '&format=json'
+  ].join(''))
+  .then(json)
+  .then(function (data) {
+    if (data && data.display_name) {
+      L.popup().setLatLng(position).setContent(data.display_name).openOn(map);
+      map.panTo(position);
+    }
+  });
+}
+
 function leaflet() {
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
@@ -43,7 +59,8 @@ function leaflet() {
       var latLng = [parseFloat(RegExp.$1), parseFloat(RegExp.$2)];
       var zoom = +RegExp.$3;
       map.setView(latLng, zoom);
-      L.popup().setLatLng(latLng).setContent('<img src="' + base + 'images/marker-icon.png">').openOn(map);
+      L.popup().setLatLng(latLng).setContent('...').openOn(map);
+      reverse(map, latLng);
     }
     else if (location) {
       var info = JSON.parse(location);
@@ -53,19 +70,7 @@ function leaflet() {
       map.setView([51.505, -0.09], 13);
     map.on('contextmenu', function (event) {
       var position = event.latlng;
-      fetch([
-        'https://nominatim.openstreetmap.org/reverse?',
-        'lat=', position.lat,
-        '&lon=', position.lng,
-        '&format=json'
-      ].join(''))
-      .then(json)
-      .then(function (data) {
-        if (data && data.display_name) {
-          L.popup().setLatLng(position).setContent(data.display_name).openOn(map);
-          map.panTo(position);
-        }
-      });
+      reverse(map, [position.lat, position.lng]);
     });
     map.on('moveend', function () {
       var info = getInfo(map);
