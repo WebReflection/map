@@ -88,7 +88,7 @@ function leaflet() {
     L.Control.Position = L.Control.extend({
       onAdd: function(map) {
         var marker = null;
-        var tracking = null;
+        var tracking = false;
         var button = L.DomUtil.create('button');
         var img = button.appendChild(L.DomUtil.create('img'));
         img.src = base + 'images/marker-icon.png';
@@ -104,7 +104,8 @@ function leaflet() {
           }
           else {
             var isTrusted = event.isTrusted;
-            tracking = navigator.geolocation.watchPosition(
+            tracking = true;
+            navigator.geolocation.watchPosition(
               function (pos) {
                 var latLng = [pos.coords.latitude, pos.coords.longitude];
                 if (!marker) {
@@ -118,7 +119,7 @@ function leaflet() {
                   marker.setLatLng(latLng);
               },
               function () {
-                tracking = null;
+                tracking = false;
               },
               {enableHighAccuracy: true}
             );
@@ -130,16 +131,6 @@ function leaflet() {
         }
         finally {
           return button;
-        }
-      },
-      onRemove: function () {
-        if (tracking) {
-          navigator.geolocation.clearWatch(tracking);
-          tracking = null;
-          if (marker) {
-            marker.remove();
-            marker = null;
-          }
         }
       }
     });
