@@ -11,7 +11,6 @@ else
   leaflet();
 
 function leaflet() {
-  // var base = 'https://unpkg.com/leaflet@1.7.1/dist/';
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
     new Promise(function (res) {
@@ -50,7 +49,7 @@ function leaflet() {
         var tracking = null;
         var button = L.DomUtil.create('button');
         var img = button.appendChild(L.DomUtil.create('img'));
-        img.src = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+        img.src = base + 'images/marker-icon.png';
         img.title = 'your position';
         button.className = 'leaflet-bar leaflet-control position';
         button.addEventListener('click', function (event) {

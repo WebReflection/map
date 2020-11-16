@@ -29,15 +29,13 @@
   <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="manifest.json">
+  <script>try{new CustomEvent('!')}catch(_){document.write('<script src="js/ie.js"><\x2fscript>')}</script>
+  <script defer src="js/screenfit.js"></script>
+  <script defer src="js/index.js"></script>
   <style>
-    html, body, #map {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      height: -webkit-fill-available;
-      overflow: hidden;
-      box-sizing: border-box;
+    #map {
+      display: block;
+      height: 100%;
     }
     button, a {
       user-select: none;
@@ -75,7 +73,6 @@
       width: calc(100vw - 82px);
     }
   </style>
-  <script defer src="js/index.js"></script>
 </head>
 <body><main id="map"></main></body>
 </html>

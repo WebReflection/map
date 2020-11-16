@@ -12,7 +12,8 @@ addEventListener('install', event => {
   event.waitUntil(
     caches.open('site').then(db => db.addAll([
       './',
-      './js/index.js'
+      './js/index.js',
+      './js/screenfit.js'
     ]))
   );
 });
