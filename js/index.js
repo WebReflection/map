@@ -62,7 +62,7 @@ function leaflet() {
         map.panBy([
           panX = (centerWidth - width) / 2,
           panY = (centerHeight - height) / 2
-        ]);
+        ], {animate: false});
         centerWidth = width;
         centerHeight = height;
       }
@@ -207,7 +207,7 @@ function leaflet() {
               map.panTo([parseFloat(lat), parseFloat(lon)]);
             }
             if (panX || panY)
-              map.panBy([panX, panY]);
+              map.panBy([panX, panY], {animate: false});
           }
         }
       }
