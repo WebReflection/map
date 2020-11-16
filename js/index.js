@@ -121,7 +121,7 @@ function leaflet() {
           return button;
         }
       },
-      onRemove() {
+      onRemove: function () {
         if (tracking) {
           navigator.geolocation.clearWatch(tracking);
           tracking = null;
