@@ -21,6 +21,13 @@ addEventListener('screenfit', function (event) {
   maxHeight = Math.max(maxHeight, event.detail.height);
 });
 
+function getInfo(map) {
+  return {
+    center: map.getCenter(),
+    zoom: map.getZoom()
+  };
+}
+
 function leaflet() {
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
@@ -39,17 +46,24 @@ function leaflet() {
   .then(function () {
     var location = localStorage.getItem('map');
     var map = L.map('map', {zoomControl: false});
-    if (location) {
+    if (/^#(\d+\.\d+)\|(\d+\.\d+)\|(\d+)$/.test(self.location.hash)) {
+      var latLng = [parseFloat(RegExp.$1), parseFloat(RegExp.$2)];
+      var zoom = +RegExp.$3;
+      map.setView(latLng, zoom);
+      L.popup().setLatLng(latLng).setContent('<img src="' + base + 'images/marker-icon.png">').openOn(map);
+    }
+    else if (location) {
       var info = JSON.parse(location);
       map.setView(info.center, info.zoom);
     }
     else
       map.setView([51.505, -0.09], 13);
     map.on('moveend', function () {
-      localStorage.setItem('map', JSON.stringify({
-        center: map.getCenter(),
-        zoom: map.getZoom()
-      }));
+      var info = getInfo(map);
+      localStorage.setItem('map', JSON.stringify(info));
+      self.location.hash = [
+        info.center.lat, info.center.lng, info.zoom
+      ].join('|');
     });
     var centerWidth = maxWidth;
     var centerHeight = maxHeight;
@@ -74,6 +88,31 @@ function leaflet() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+    L.Control.Share = L.Control.extend({
+      onAdd: function (map) {
+        var button = L.DomUtil.create('button');
+        button.textContent = '🔗';
+        button.title = 'share location';
+        button.className = 'leaflet-bar leaflet-control share';
+        button.addEventListener('click', function () {
+          var input = L.DomUtil.create('input');
+          button.appendChild(input);
+          input.value = self.location;
+          try {
+            input.select();
+            document.execCommand('copy');
+            button.textContent = '✔';
+          }
+          catch (o_O) {
+            button.textContent = '⚠';
+          }
+          setTimeout(function () {
+            button.textContent = '🔗';
+          }, 1500);
+        });
+        return button;
+      }
+    });
     L.Control.Position = L.Control.extend({
       onAdd: function(map) {
         var marker = null;
@@ -212,6 +251,9 @@ function leaflet() {
         }
       }
     });
+    L.control.share = function(opts) {
+      return new L.Control.Share(opts);
+    };
     L.control.position = function(opts) {
       return new L.Control.Position(opts);
     };
@@ -220,6 +262,7 @@ function leaflet() {
     };
     L.control.zoom({position: 'topright'}).addTo(map);
     L.control.position({position: 'bottomright'}).addTo(map);
+    L.control.share({position: 'bottomright'}).addTo(map);
     L.control.search({position: 'bottomleft'}).addTo(map);
   });
 }

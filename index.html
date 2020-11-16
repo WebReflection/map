@@ -40,7 +40,10 @@
     button, a {
       user-select: none;
     }
-    .leaflet-bar.position {
+    .leaflet-popup-content {
+      text-align: center;
+    }
+    .leaflet-bar.position, .leaflet-bar.share {
       cursor: pointer;
       width: 34px;
       height: 34px;
@@ -50,7 +53,7 @@
       justify-content: center;
       background-color: #fff;
     }
-    .leaflet-bar.position:hover {
+    .leaflet-bar.position:hover, .leaflet-bar.share:hover {
       background-color: #f4f4f4;
     }
     .leaflet-bar.position img {
