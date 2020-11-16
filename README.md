@@ -14,7 +14,7 @@
 
 ## Usage
 
-  * longp press (*hold*) to search via reverse geocode
+  * long press (*hold*) to search via reverse geocode
   * click pin 📍 button to move to your location
   * click the link 🔗 button to copy to clipboard and share current map center
   * click on the *input* to search places
