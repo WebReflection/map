@@ -17,6 +17,10 @@ function getInfo(map) {
   };
 }
 
+function json(body) {
+  return body.json();
+}
+
 function leaflet() {
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
@@ -47,6 +51,22 @@ function leaflet() {
     }
     else
       map.setView([51.505, -0.09], 13);
+    map.on('contextmenu', function (event) {
+      var position = event.latlng;
+      fetch([
+        'https://nominatim.openstreetmap.org/reverse?',
+        'lat=', position.lat,
+        '&lon=', position.lng,
+        '&format=json'
+      ].join(''))
+      .then(json)
+      .then(function (data) {
+        if (data && data.display_name) {
+          L.popup().setLatLng(position).setContent(data.display_name).openOn(map);
+          map.panTo(position);
+        }
+      });
+    });
     map.on('moveend', function () {
       var info = getInfo(map);
       localStorage.setItem('map', JSON.stringify(info));
@@ -57,34 +77,6 @@ function leaflet() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    L.Control.Share = L.Control.extend({
-      onAdd: function (map) {
-        var button = L.DomUtil.create('button');
-        button.textContent = '🔗';
-        button.title = 'share location';
-        button.className = 'leaflet-bar leaflet-control share';
-        button.addEventListener('click', function () {
-          var input = L.DomUtil.create('input');
-          var info = getInfo(map);
-          button.appendChild(input);
-          input.value = self.location.protocol + '//' +
-                        self.location.host + self.location.pathname + '?' +
-                        [info.center.lat, info.center.lng, info.zoom].join('|');
-          try {
-            input.select();
-            document.execCommand('copy');
-            button.textContent = '✔';
-          }
-          catch (o_O) {
-            button.textContent = '⚠';
-          }
-          setTimeout(function () {
-            button.textContent = '🔗';
-          }, 1500);
-        });
-        return button;
-      }
-    });
     L.Control.Position = L.Control.extend({
       onAdd: function(map) {
         var marker = null;
@@ -186,13 +178,14 @@ function leaflet() {
         function searchValue(value) {
           timer = 0;
           if (!results.has(value))
-            results.set(value, fetch([
-              'https://nominatim.openstreetmap.org/search?q=',
-              '&format=json'
-            ].join(encodeURIComponent(lastValue)))
-            .then(
-              function (b) { return b.json(); },
-              function () { results.delete(value); }));
+            results.set(
+              value,
+              fetch([
+                'https://nominatim.openstreetmap.org/search?q=',
+                '&format=json'
+              ].join(encodeURIComponent(lastValue)))
+              .then(json, function () { results.delete(value); })
+          );
           results.get(value).then(showValue);
         }
         function showValue(result) {
@@ -214,14 +207,42 @@ function leaflet() {
         }
       }
     });
-    L.control.share = function(opts) {
-      return new L.Control.Share(opts);
-    };
+    L.Control.Share = L.Control.extend({
+      onAdd: function (map) {
+        var button = L.DomUtil.create('button');
+        button.textContent = '🔗';
+        button.title = 'share location';
+        button.className = 'leaflet-bar leaflet-control share';
+        button.addEventListener('click', function () {
+          var input = L.DomUtil.create('input');
+          var info = getInfo(map);
+          button.appendChild(input);
+          input.value = self.location.protocol + '//' +
+                        self.location.host + self.location.pathname + '?' +
+                        [info.center.lat, info.center.lng, info.zoom].join('|');
+          try {
+            input.select();
+            document.execCommand('copy');
+            button.textContent = '✔';
+          }
+          catch (o_O) {
+            button.textContent = '⚠';
+          }
+          setTimeout(function () {
+            button.textContent = '🔗';
+          }, 1500);
+        });
+        return button;
+      }
+    });
     L.control.position = function(opts) {
       return new L.Control.Position(opts);
     };
     L.control.search = function(opts) {
       return new L.Control.Search(opts);
+    };
+    L.control.share = function(opts) {
+      return new L.Control.Share(opts);
     };
     L.control.zoom({position: 'topright'}).addTo(map);
     L.control.position({position: 'bottomright'}).addTo(map);
