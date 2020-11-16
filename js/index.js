@@ -10,22 +10,15 @@ if ('serviceWorker' in navigator)
 else
   leaflet();
 
-var maxWidth = 0;
-var maxHeight = 0;
-addEventListener('orientationchange', function (event) {
-  maxWidth = 0;
-  maxHeight = 0;
-});
-addEventListener('screenfit', function (event) {
-  maxWidth = Math.max(maxWidth, event.detail.width);
-  maxHeight = Math.max(maxHeight, event.detail.height);
-});
-
 function getInfo(map) {
   return {
     center: map.getCenter(),
     zoom: map.getZoom()
   };
+}
+
+function panBy(map, panX, panY) {
+  map.panBy([panX, panY], {animate: false});
 }
 
 function leaflet() {
@@ -46,7 +39,7 @@ function leaflet() {
   .then(function () {
     var location = localStorage.getItem('map');
     var map = L.map('map', {zoomControl: false});
-    if (/^#(\d+\.\d+)\|(\d+\.\d+)\|(\d+)$/.test(self.location.hash)) {
+    if (/^\?(\d+\.\d+)\|(\d+\.\d+)\|(\d+)$/.test(decodeURIComponent(self.location.search))) {
       var latLng = [parseFloat(RegExp.$1), parseFloat(RegExp.$2)];
       var zoom = +RegExp.$3;
       map.setView(latLng, zoom);
@@ -61,28 +54,33 @@ function leaflet() {
     map.on('moveend', function () {
       var info = getInfo(map);
       localStorage.setItem('map', JSON.stringify(info));
-      self.location.hash = [
-        info.center.lat, info.center.lng, info.zoom
-      ].join('|');
     });
-    var centerWidth = maxWidth;
-    var centerHeight = maxHeight;
+    var centerWidth = 0;
+    var centerHeight = 0;
     var panX = 0;
     var panY = 0;
     addEventListener('screenfit', function (event) {
       var width = event.detail.width;
       var height = event.detail.height;
-      if (width !== centerWidth || height !== centerHeight) {
-        map.panBy([
-          panX = (centerWidth - width) / 2,
-          panY = (centerHeight - height) / 2
-        ], {animate: false});
-        centerWidth = width;
-        centerHeight = height;
+      if (centerWidth || centerHeight) {
+        if (
+          (width !== centerWidth) ||
+          (height !== centerHeight)
+        ) {
+          panBy(
+            map,
+            panX = (centerWidth - width) / 2,
+            panY = (centerHeight - height) / 2
+          );
+        }
+        else {
+          panX = 0;
+          panY = 0;
+        }
       }
       else {
-        panX = 0;
-        panY = 0;
+        centerWidth = width;
+        centerHeight = height;
       }
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -96,8 +94,11 @@ function leaflet() {
         button.className = 'leaflet-bar leaflet-control share';
         button.addEventListener('click', function () {
           var input = L.DomUtil.create('input');
+          var info = getInfo(map);
           button.appendChild(input);
-          input.value = self.location;
+          input.value = self.location.protocol + '//' +
+                        self.location.host + self.location.pathname + '?' +
+                        [info.center.lat, info.center.lng, info.zoom].join('|');
           try {
             input.select();
             document.execCommand('copy');
@@ -238,7 +239,7 @@ function leaflet() {
               map.fitBounds([
                 [coords[0], coords[2]],
                 [coords[1], coords[3]]
-              ]);
+              ], {animate: false});
             }
             else {
               var lat = result[0].lat;
@@ -246,7 +247,7 @@ function leaflet() {
               map.panTo([parseFloat(lat), parseFloat(lon)]);
             }
             if (panX || panY)
-              map.panBy([panX, panY], {animate: false});
+              panBy(map, panX, panY);
           }
         }
       }
