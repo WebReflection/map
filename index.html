@@ -36,15 +36,18 @@
     #map {
       display: block;
       height: 100%;
-    }
-    button, a {
       user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
     }
     .leaflet-popup {
       opacity: .9 !important;
     }
     .leaflet-popup-content {
       text-align: center;
+      user-select: initial;
+      -moz-user-select: initial;
+      -webkit-user-select: initial;
     }
     .leaflet-popup-content img {
       width: 18px;
