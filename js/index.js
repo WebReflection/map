@@ -53,13 +53,22 @@ function leaflet() {
     });
     var centerWidth = maxWidth;
     var centerHeight = maxHeight;
+    var panX = 0;
+    var panY = 0;
     addEventListener('screenfit', function (event) {
       var width = event.detail.width;
       var height = event.detail.height;
       if (width !== centerWidth || height !== centerHeight) {
-        map.panBy([(centerWidth - width) / 2, (centerHeight - height) / 2]);
+        map.panBy([
+          panX = (centerWidth - width) / 2,
+          panY = (centerHeight - height) / 2
+        ]);
         centerWidth = width;
         centerHeight = height;
+      }
+      else {
+        panX = 0;
+        panY = 0;
       }
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -197,6 +206,8 @@ function leaflet() {
               var lon = result[0].lon;
               map.panTo([parseFloat(lat), parseFloat(lon)]);
             }
+            if (panX || panY)
+              map.panBy([panX, panY]);
           }
         }
       }
