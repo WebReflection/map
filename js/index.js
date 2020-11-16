@@ -10,6 +10,17 @@ if ('serviceWorker' in navigator)
 else
   leaflet();
 
+var maxWidth = 0;
+var maxHeight = 0;
+addEventListener('orientationchange', function (event) {
+  maxWidth = 0;
+  maxHeight = 0;
+});
+addEventListener('screenfit', function (event) {
+  maxWidth = Math.max(maxWidth, event.detail.width);
+  maxHeight = Math.max(maxHeight, event.detail.height);
+});
+
 function leaflet() {
   var base = 'https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/';
   Promise.all([
@@ -40,6 +51,17 @@ function leaflet() {
         zoom: map.getZoom()
       }));
     });
+    var centerWidth = maxWidth;
+    var centerHeight = maxHeight;
+    addEventListener('screenfit', function (event) {
+      var width = event.detail.width;
+      var height = event.detail.height;
+      if (width !== centerWidth || height !== centerHeight) {
+        map.panBy([(centerWidth - width) / 2, (centerHeight - height) / 2]);
+        centerWidth = width;
+        centerHeight = height;
+      }
+    });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
@@ -66,9 +88,9 @@ function leaflet() {
               function (pos) {
                 var latLng = [pos.coords.latitude, pos.coords.longitude];
                 if (!marker) {
+                  localStorage.setItem('geo', 1);
                   img.className = 'active';
                   marker = L.marker(latLng).addTo(map);
-                  localStorage.setItem('geo', 1);
                   if (isTrusted)
                     map.panTo(latLng);
                 }
