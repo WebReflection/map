@@ -151,10 +151,12 @@ function leaflet() {
         var input = L.DomUtil.create('input');
         var lastValue = '';
         var results = new Map;
-        input.className = 'leaflet-bar leaflet-control search';
-        input.addEventListener('touchstart', function () {
+        var focus = function () {
           input.focus();
-        });
+        };
+        input.className = 'leaflet-bar leaflet-control search';
+        input.addEventListener('touchstart', focus);
+        input.addEventListener('click', focus);
         input.addEventListener('focus', function () {
           input.placeholder = '';
         });
