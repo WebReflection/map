@@ -45,9 +45,12 @@ function leaflet() {
       el.rel = 'stylesheet';
       el.href = base + 'leaflet.css';
       document.body.appendChild(el).onload = res;
+      // Kindle ...
+      setTimeout(res, 2000);
     }),
     new Promise(function (res) {
       var el = document.createElement('script');
+      el.type = 'text/javascript';
       el.src = base + 'leaflet.js';
       document.body.appendChild(el).onload = res;
     })
