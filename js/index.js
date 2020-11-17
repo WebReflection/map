@@ -85,6 +85,18 @@ function leaflet() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+    L.Control.Open = L.Control.extend({
+      onAdd: function (map) {
+        var button = L.DomUtil.create('button');
+        button.textContent = '↗';
+        button.title = 'open map';
+        button.className = 'leaflet-bar leaflet-control share';
+        button.addEventListener('click', function () {
+          self.open(self.location.href);
+        });
+        return button;
+      }
+    });
     L.Control.Position = L.Control.extend({
       onAdd: function(map) {
         var marker = null;
@@ -243,6 +255,9 @@ function leaflet() {
         return button;
       }
     });
+    L.control.open = function(opts) {
+      return new L.Control.Open(opts);
+    };
     L.control.position = function(opts) {
       return new L.Control.Position(opts);
     };
@@ -253,8 +268,13 @@ function leaflet() {
       return new L.Control.Share(opts);
     };
     L.control.zoom({position: 'topright'}).addTo(map);
-    L.control.position({position: 'bottomright'}).addTo(map);
-    L.control.share({position: 'bottomright'}).addTo(map);
-    L.control.search({position: 'bottomleft'}).addTo(map);
+    if (self.top === self) {
+      L.control.position({position: 'bottomright'}).addTo(map);
+      L.control.share({position: 'bottomright'}).addTo(map);
+      L.control.search({position: 'bottomleft'}).addTo(map);
+    }
+    else {
+      L.control.open({position: 'bottomright'}).addTo(map);
+    }
   });
 }
