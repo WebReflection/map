@@ -62,8 +62,10 @@ function leaflet() {
       var latLng = [parseFloat(RegExp.$1), parseFloat(RegExp.$2)];
       var zoom = +RegExp.$3;
       map.setView(latLng, zoom);
-      L.popup().setLatLng(latLng).setContent('...').openOn(map);
-      reverse(map, latLng);
+      if (self.location.hash !== '#clean') {
+        L.popup().setLatLng(latLng).setContent('...').openOn(map);
+        reverse(map, latLng);
+      }
     }
     else if (location) {
       var info = JSON.parse(location);
