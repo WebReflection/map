@@ -12,6 +12,10 @@
 
 ![Map Example](./img/preview.jpg)
 
+## Embedded
+
+See this [live embedded example](https://webreflection.github.io/screenfit/map/), and add `#clean` hash to the `<iframe>` *src* to avoid showing the popup.
+
 ## Usage
 
   * long press (*hold*) to search via reverse geocode
